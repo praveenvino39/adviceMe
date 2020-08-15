@@ -9,7 +9,18 @@
       </div>
       <div class="advice-card">
         <h1 id="advice-text" class="animate__animated animate__pulse">{{ advices['advice'] }}</h1>
-        <button @click="refresh" class="btn btn-success btn-md"><span class="glyphicon glyphicon-refresh"></span></button>
+        <div class="row">
+          <div class="col" id="reloadbtn">
+            <button @click="refresh" class="btn btn-success"><span class="glyphicon glyphicon-refresh"></span>
+            </button>
+          </div>
+          <div class="col" id="savebtn">
+            <form class="form-group">
+              <input type="text" hidden class="form-group-item" v-model="advices['advice']">
+              <button class="btn btn-warning" @click.prevent="submitIt()">Save</button>
+            </form>
+          </div>
+        </div>
       </div>
     </template>
   </div>
@@ -30,24 +41,28 @@ export default {
   }
   ,
   methods: {
-    refresh(){
-      eventBus.$emit('hideIt', false );
+    refresh() {
+      eventBus.$emit('hideIt', false);
       this.isLoading = true
-      setTimeout(()=>{
+      setTimeout(() => {
         this.$http.get('https://api.adviceslip.com/advice').then((data) => {
           this.isLoading = false
           this.advices = data.body.slip;
-          eventBus.$emit('showIt', true );
+          eventBus.$emit('showIt', true);
         })
-      }  ,1000)
-
+      }, 1000)
+    },
+    submitIt() {
+      this.$http.post('https://vue-advice.firebaseio.com/advices.json', {text: this.advices['advice']})
+        .then(response => console.log(response), error => console.log(error))
     }
   },
   created() {
+    eventBus.$emit('hideIt', false)
     this.$http.get('https://api.adviceslip.com/advice').then((data) => {
       this.isLoading = false
       this.advices = data.body.slip;
-      eventBus.$emit('showIt', true )
+      eventBus.$emit('showIt', true)
     })
   }
 }
@@ -64,19 +79,32 @@ export default {
   padding: 10px;
   color: white;
 }
-.loading-enter{
+
+.loading-enter {
   opacity: 0;
 }
-.loading-enter-active{
+
+.loading-enter-active {
   transition: 1s;
 }
-.loading-leave{
+
+.loading-leave {
 
 }
+
 .loading-leave-active {
   transition: 1s;
   opacity: 0;
 }
+
+#reloadbtn {
+  text-align: end;
+}
+
+#savebtn {
+  text-align: start;
+}
+
 .advice-card {
   border-radius: 10px;
   width: 60%;
@@ -90,7 +118,8 @@ export default {
   flex-direction: column;
   align-items: center;
 }
-#advice-text{
+
+#advice-text {
   margin-top: auto;
   font-size: 40px;
   font-family: 'Dancing Script', cursive;

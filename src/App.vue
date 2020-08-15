@@ -1,7 +1,7 @@
 <template>
   <div>
-    <app-advice></app-advice>
-    <div v-if="showFooter" class="fixed-bottom"><h5 class="text-white">Copyright © 2020 Pv4you. All Rights Reserved</h5></div>
+    <router-view></router-view>
+    <div v-if="showFooter" class="fixed-bottom"><h5 class="text-white">Copyright © 2020 Pv4you. All Rights Reserved</h5>        <router-link to="/about"><button class="btn btn-primary btn-sm fixed-left">About</button></router-link></div>
   </div>
 </template>
 <script>
